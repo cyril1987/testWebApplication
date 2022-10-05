@@ -12,10 +12,10 @@ public class PostGreConnectivity {
             try {
                 Class.forName("org.postgresql.Driver");
                 connection = DriverManager
-                        .getConnection("jdbc:postgresql://localhost:5432/testdb",
-                                "postgres", "123");
+                        .getConnection("jdbc:postgresql://43.205.203.68:5432/testdb",
+                                "administrator", "");
                 System.out.println("Opened database successfully");
-
+s
                 /* to create a table in post gre*/
                 Statement createStatement = connection.createStatement();
                 String sql = "CREATE TABLE COMPANY " +
