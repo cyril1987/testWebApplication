@@ -13,9 +13,6 @@ import java.util.concurrent.atomic.AtomicLong;
 @RequestMapping(path = "/iconcile")
 public class EmployeeController {
 
-    private static final String template = "Hello, %s!";
-    private final AtomicLong counter = new AtomicLong();
-
 
     @GetMapping("/allEmployees")
     public String getEmployees() {
