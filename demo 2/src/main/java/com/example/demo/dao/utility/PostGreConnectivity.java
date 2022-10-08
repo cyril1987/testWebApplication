@@ -1,4 +1,4 @@
-package com.example.demo.dao;
+package com.example.demo.dao.utility;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -12,20 +12,21 @@ public class PostGreConnectivity {
             try {
                 Class.forName("org.postgresql.Driver");
                 connection = DriverManager
-                        .getConnection("jdbc:postgresql://43.205.203.68:5432/testdb",
-                                "administrator", "");
+                        .getConnection("jdbc:postgresql://43.205.203.68:5432/test",
+                                "postgres", "iconcile");
                 System.out.println("Opened database successfully");
-s
-                /* to create a table in post gre*/
+                connection.setAutoCommit(false);
+
+                /* to create a table in post gre*//*
                 Statement createStatement = connection.createStatement();
-                String sql = "CREATE TABLE COMPANY " +
+                String sql = "CREATE TABLE COMPANY_TEST " +
                         "(ID INT PRIMARY KEY     NOT NULL," +
                         " NAME           TEXT    NOT NULL, " +
                         " AGE            INT     NOT NULL, " +
                         " ADDRESS        CHAR(50), " +
                         " SALARY         REAL)";
                 createStatement.executeUpdate(sql);
-                createStatement.close();
+                createStatement.close();*/
 
                 //insert queries
                 Statement insertStatement = connection.createStatement();
