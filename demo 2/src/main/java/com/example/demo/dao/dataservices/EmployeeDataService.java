@@ -1,45 +1,41 @@
 package com.example.demo.dao.dataservices;
 
 import com.example.demo.dao.dto.EmployeeDTO;
+import com.example.demo.persistance.entity.EmployeeEntity;
+import com.example.demo.persistance.repository.EmployeeRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+@Service
+@RequiredArgsConstructor
 public class EmployeeDataService {
 
-    public List<EmployeeDTO> getEmployees() {
-        PostGreDatabaseConnector postGreDatabaseConnector = new PostGreDatabaseConnector();
-        List<EmployeeDTO> employeeDTOList = new ArrayList<>();
-        Connection dbConnection = postGreDatabaseConnector.getPostGreConnection();
-        try {
-            Statement stmt = dbConnection.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM COMPANY;");
-            while (rs.next()) {
-                int id = rs.getInt("id");
-                String name = rs.getString("name");
-                int age = rs.getInt("age");
-                String address = rs.getString("address");
-                float salary = rs.getFloat("salary");
-                System.out.println("ID = " + id);
-                System.out.println("NAME = " + name);
-                System.out.println("AGE = " + age);
-                System.out.println("ADDRESS = " + address);
-                System.out.println("SALARY = " + salary);
-                System.out.println();
-                EmployeeDTO employeeDTO = new EmployeeDTO();
-                employeeDTO.setId(id);
-                employeeDTO.setName(name);
-                employeeDTO.setAddress(address);
-                employeeDTO.setAge(age);
-                employeeDTOList.add(employeeDTO);
+    private final EmployeeRepository employeeRepository;
 
-            }
-            rs.close();
-            stmt.close();
-            dbConnection.close();
+    private static EmployeeDTO getEmployeeDTO(EmployeeEntity emp) {
+
+        return EmployeeDTO.builder()
+                .id(emp.getEmpId())
+                .name(emp.getEmpName())
+                .address(emp.getAddress())
+                .age(emp.getAge())
+                .salary(emp.getSalary())
+                .build();
+    }
+
+    public List<EmployeeDTO> getEmployees() {
+        List<EmployeeDTO> employeeDTOList = new ArrayList<>();
+        try {
+            employeeRepository.findAll().forEach(emp -> {
+
+                EmployeeDTO employeeDTO = getEmployeeDTO(emp);
+
+                employeeDTOList.add(employeeDTO);
+            });
+
         } catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
 
@@ -48,37 +44,14 @@ public class EmployeeDataService {
         return employeeDTOList;
     }
 
-
     public List<EmployeeDTO> getEmployeeByName(String searchName) {
-        PostGreDatabaseConnector postGreDatabaseConnector = new PostGreDatabaseConnector();
-        Connection dbConnection = postGreDatabaseConnector.getPostGreConnection();
         List<EmployeeDTO> employeeDTOList = new ArrayList<>();
         try {
-            Statement stmt = dbConnection.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM COMPANY where name like '%"+searchName+"%'");
-            while (rs.next()) {
-                int id = rs.getInt("id");
-                String name = rs.getString("name");
-                int age = rs.getInt("age");
-                String address = rs.getString("address");
-                float salary = rs.getFloat("salary");
-                System.out.println("ID = " + id);
-                System.out.println("NAME = " + name);
-                System.out.println("AGE = " + age);
-                System.out.println("ADDRESS = " + address);
-                System.out.println("SALARY = " + salary);
-                System.out.println();
-                EmployeeDTO employeeDTO = new EmployeeDTO();
-                employeeDTO.setId(id);
-                employeeDTO.setName(name);
-                employeeDTO.setAddress(address);
-                employeeDTO.setAge(age);
-                employeeDTOList.add(employeeDTO);
+            employeeRepository.findEmployees(searchName).forEach(emp ->
+                    employeeDTOList.add(getEmployeeDTO(emp))
 
-            }
-            rs.close();
-            stmt.close();
-            dbConnection.close();
+            );
+
         } catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
 
