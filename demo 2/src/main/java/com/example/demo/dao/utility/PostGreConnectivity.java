@@ -1,35 +1,30 @@
 package com.example.demo.dao.utility;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class PostGreConnectivity {
 
+    private static final Logger logger = Logger.getLogger(PostGreConnectivity.class.getName());
 
-        public static void main(String args[]) {
-            Connection connection = null;
-            try {
-                Class.forName("org.postgresql.Driver");
-                connection = DriverManager
-                        .getConnection("jdbc:postgresql://43.205.203.68:5432/test",
-                                "postgres", "iconcile");
-                System.out.println("Opened database successfully");
-                connection.setAutoCommit(false);
+    public static void main(String[] args) {
+        String dbUrl = System.getenv("DB_URL");
+        String dbUser = System.getenv("DB_USERNAME");
+        String dbPassword = System.getenv("DB_PASSWORD");
 
-                /* to create a table in post gre*//*
-                Statement createStatement = connection.createStatement();
-                String sql = "CREATE TABLE COMPANY_TEST " +
-                        "(ID INT PRIMARY KEY     NOT NULL," +
-                        " NAME           TEXT    NOT NULL, " +
-                        " AGE            INT     NOT NULL, " +
-                        " ADDRESS        CHAR(50), " +
-                        " SALARY         REAL)";
-                createStatement.executeUpdate(sql);
-                createStatement.close();*/
+        if (dbUrl == null || dbUser == null || dbPassword == null) {
+            logger.severe("Database environment variables (DB_URL, DB_USERNAME, DB_PASSWORD) must be set.");
+            return;
+        }
 
-                //insert queries
-                Statement insertStatement = connection.createStatement();
+        try (Connection connection = DriverManager.getConnection(dbUrl, dbUser, dbPassword)) {
+            logger.info("Opened database successfully");
+            connection.setAutoCommit(false);
+
+            try (Statement insertStatement = connection.createStatement()) {
                 String sqlInsert = "INSERT INTO COMPANY (ID,NAME,AGE,ADDRESS,SALARY) "
                         + "VALUES (1, 'Paul', 32, 'California', 20000.00 );";
                 insertStatement.executeUpdate(sqlInsert);
@@ -45,14 +40,12 @@ public class PostGreConnectivity {
                 sqlInsert = "INSERT INTO COMPANY (ID,NAME,AGE,ADDRESS,SALARY) "
                         + "VALUES (4, 'Mark', 25, 'Rich-Mond ', 65000.00 );";
                 insertStatement.executeUpdate(sqlInsert);
-
-                insertStatement.close();
-                connection.commit();
-                connection.close();
-            } catch (Exception e) {
-                System.err.println( e.getClass().getName()+": "+ e.getMessage() );
-                System.exit(0);
             }
-            System.out.println("Records created successfully");
+
+            connection.commit();
+            logger.info("Records created successfully");
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Database operation failed", e);
         }
+    }
 }
