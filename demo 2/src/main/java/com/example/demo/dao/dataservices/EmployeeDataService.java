@@ -4,6 +4,8 @@ import com.example.demo.dao.dto.EmployeeDTO;
 import com.example.demo.persistance.entity.EmployeeEntity;
 import com.example.demo.persistance.repository.EmployeeRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -12,6 +14,8 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class EmployeeDataService {
+
+    private static final Logger logger = LoggerFactory.getLogger(EmployeeDataService.class);
 
     private final EmployeeRepository employeeRepository;
 
@@ -37,10 +41,10 @@ public class EmployeeDataService {
             });
 
         } catch (Exception e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            logger.error("Error retrieving employees", e);
 
         }
-        System.out.println("Returning no of employees: " + employeeDTOList.size());
+        logger.debug("Returning no of employees: {}", employeeDTOList.size());
         return employeeDTOList;
     }
 
@@ -53,10 +57,10 @@ public class EmployeeDataService {
             );
 
         } catch (Exception e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            logger.error("Error searching employees by name", e);
 
         }
-        System.out.println("Returning no of employees: " + employeeDTOList.size());
+        logger.debug("Returning no of employees: {}", employeeDTOList.size());
         return employeeDTOList;
     }
 }
